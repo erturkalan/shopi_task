@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shopi_task/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'product.dart';
 import 'request.dart';
 import 'my_card.dart';
 
@@ -28,8 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
     // TODO: implement initState
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         isLoading = true;
         _getMoreData();
       }
@@ -103,21 +103,30 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void updateUI(String item, int pageNumber, int sortNumber) async {
     var itemData = await Request().getItemData(item, pageNumber, sortNumber);
-    setState(() {
-      resultNumber = itemData['totalResultCount'];
-      products = itemData['products'];
-      totalPageCount = itemData['totalPageCount'];
-    });
 
-    if (resultNumber == null) {
+    if (itemData != null) {
       setState(() {
-        products = [];
-        message = 'No products found.';
+        // resultNumber = itemData['totalResultCount'];
+        // products = itemData['products'];
+        // totalPageCount = itemData['totalPageCount'];
+
+        ProductListResponseModel productListResponseModel = ProductListResponseModel.fromJson(itemData);
+        this.resultNumber = productListResponseModel.productNumber;
+        this.totalPageCount = productListResponseModel.totalPageNumber;
+        // this.products = productListResponseModel.productList;
+        this.products.addAll(productListResponseModel.productList);
       });
-    } else {
-      setState(() {
-        message = '$resultNumber RESULTS FOR "${searchWord.toUpperCase()}"';
-      });
+
+      if (resultNumber == null) {
+        setState(() {
+          products = [];
+          message = 'No products found.';
+        });
+      } else {
+        setState(() {
+          message = '$resultNumber RESULTS FOR "${searchWord.toUpperCase()}"';
+        });
+      }
     }
   }
 
@@ -186,9 +195,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   width: 137,
                   margin: EdgeInsets.fromLTRB(20, 16, 0, 0),
                   padding: EdgeInsets.fromLTRB(34, 10, 34, 10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.white),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Colors.white),
                   child: Row(children: [
                     SvgPicture.asset(
                       'assets/icons/iconsBasicFilter.svg',
@@ -197,10 +204,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     Text(
                       'Filter',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF16325c),
-                          fontSize: 15),
+                      style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF16325c), fontSize: 15),
                     ),
                   ])),
               SizedBox(
@@ -217,9 +221,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: 138,
                     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
                     padding: EdgeInsets.fromLTRB(37, 10, 17, 10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.white),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Colors.white),
                     child: Row(children: [
                       SvgPicture.asset(
                         'assets/icons/sort.svg',
@@ -228,10 +230,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       Text(
                         'Sort',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF16325c),
-                            fontSize: 15),
+                        style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF16325c), fontSize: 15),
                       ),
                     ])),
               ),
@@ -257,9 +256,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: 59,
                     margin: EdgeInsets.fromLTRB(0, 16, 20, 0),
                     padding: EdgeInsets.fromLTRB(18, 10, 17, 10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.white),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Colors.white),
                     child: SvgPicture.asset(
                       'assets/icons/iconsOtherCardList.svg',
                       height: 24,
@@ -290,12 +287,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   controller: _scrollController,
                   itemCount: products.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 0.45,
-                      crossAxisCount: toggleNumber,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 20),
+                      childAspectRatio: 0.45, crossAxisCount: toggleNumber, mainAxisSpacing: 16, crossAxisSpacing: 20),
                   itemBuilder: (context, index) {
-                    return getCard(products[index]);
+                    return getCard2(products[index]);
                   }),
             ))
           ],
@@ -310,10 +304,10 @@ class _SearchScreenState extends State<SearchScreen> {
     var listPrice = item['listPrice'];
     String price = listPrice.toString();
     var picture = item['picture']['url'];
-    return MyCard(
-        picture: picture,
-        headline: headline,
-        productName: productName,
-        price: price);
+    return MyCard(picture: picture, headline: headline, productName: productName, price: price);
+  }
+
+  Widget getCard2(Product product) {
+    return ProductTile(product: product);
   }
 }

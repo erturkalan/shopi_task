@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'constants.dart';
+import 'product.dart';
 
 class MyCard extends StatelessWidget {
   const MyCard({
@@ -62,6 +63,74 @@ class MyCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 '€$price',
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: kTextColour),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProductTile extends StatelessWidget {
+  const MyCard({
+    Key key,
+    @required this.product
+  }) : super(key: key);
+
+  Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 292,
+      width: 159,
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+            child: Image(
+              image: NetworkImage(product.imageUrl),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  product.headline,
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF8a98ad)),
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 2, 12, 2),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                product.productName,
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: kTextColour),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 2, 12, 1),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '€${product.listPrice}',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
